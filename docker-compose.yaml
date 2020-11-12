@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+
+  bplusbot:
+    stdin_open: true
+    tty: true
+    container_name: ct_bpbot
+    hostname: bpbot
+    image: bpbot
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    # volumes:
+    #   - $PWD/xml:/nfeimport/xml:rw
+    #   - $PWD/.:/nfeimport:rw
+    networks:
+      - infra
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  infra:
+    driver: bridge
