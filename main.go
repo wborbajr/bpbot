@@ -17,7 +17,10 @@ type internalError struct {
 	Message string `json:"message"`
 }
 
-const system_name = "[Telegram BOT V0.0.1.0]"
+var (
+	system_name 	= "Telegram BOT"
+	system_version 	= ".:: V0.0.1.0 ::."
+)
 
 func init() {
 	err := godotenv.Load()
@@ -73,7 +76,7 @@ func setupApp() {
 
 	port := os.Getenv("APP_PORT")
 
-	log.Printf( system_name + " up and running: http://127.0.0.1:%s", port)
+	log.Printf( "%s %s up and running: http://127.0.0.1:%s", system_name, system_version, port)
 	log.Fatal(app.Listen(":"+port))
 }
 

@@ -16,6 +16,8 @@ services:
     #   - $PWD/.:/nfeimport:rw
     networks:
       - infra
+    ports:
+      - 3001:3001
     logging:
       driver: "json-file"
       options:
