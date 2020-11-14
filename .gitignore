@@ -2,4 +2,4 @@ tmp/
 functions/
 .env
 .vscode
-!certs/gen.sh
+certs/!gen.sh
