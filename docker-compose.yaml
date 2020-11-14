@@ -17,7 +17,7 @@ services:
     networks:
       - infra
     ports:
-      - 3001:3001
+      - 3043:3043
     logging:
       driver: "json-file"
       options:
