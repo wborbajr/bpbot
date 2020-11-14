@@ -78,11 +78,9 @@ func setupApp() {
 	sslport := os.Getenv("APP_SSL_PORT")
 
 	log.Printf( "%s %s up and running: https://127.0.0.1:%s", system_name, system_version, sslport)
+	log.Fatal(app.Server().ListenAndServeTLS(":"+sslport, "./certs/server.crt", "./certs/server.key"))
 	// log.Fatal(app.Listen(":"+port))
-	err := app.Server().ListenAndServeTLS(":"+sslport, "./certs/server.crt", "./certs/server.key")
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	
 }
 
 func botHealthCheck(c *fiber.Ctx) error {
