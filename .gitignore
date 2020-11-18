@@ -5,3 +5,4 @@ functions/
 certs/*ca*
 certs/*server*
 certs/!gen.sh
+vendor/
