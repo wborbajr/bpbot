@@ -9,7 +9,7 @@ services:
       - PUID=1000 #optional
       - PGID=1000 #optional
       - TZ=America/Sao_Paulo
-      - SUBDOMAINS=bplusbot,wborbajr
+      - SUBDOMAINS=${DUCK_SUBDOMAINS}
       - TOKEN=${DUCK_TOKEN}
       - LOG_FILE=false
     restart: always
@@ -19,7 +19,7 @@ services:
     tty: true
     container_name: ct_bpbot
     hostname: bpbot
-    image: bpbot:latest1
+    image: bpbot:latest
     restart: always
     build:
       context: .
