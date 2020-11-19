@@ -23,7 +23,7 @@ services:
     restart: always
     build:
       context: .
-      dockerfile: dockerfile/Dockerfile
+      dockerfile: docker/development/Dockerfile
     # volumes:
     #   - $PWD/xml:/nfeimport/xml:rw
     #   - $PWD/.:/nfeimport:rw

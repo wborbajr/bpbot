@@ -9,7 +9,7 @@ import (
 
 const (
 	system_name 	= "Telegram BOT"
-	system_version 	= ".:: V0.0.1.0 ::."
+	system_version 	= ".:: V0.0.1.1 ::."
 )
 
 func init() {

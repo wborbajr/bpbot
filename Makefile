@@ -1,3 +1,12 @@
+production:
+	docker build --pull --rm -f docker/production/Dockerfile -t wborbajr/bpbot:latest "."
+
+deploy:
+	docker push wborbajr/bpbot:latest
+
+development:
+	docker build --pull --rm -f docker/development/Dockerfile -t wborbajr/bpbot:develop "."
+
 postgres:
 	docker run --name postgres12 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 

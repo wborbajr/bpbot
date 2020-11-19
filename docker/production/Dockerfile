@@ -1,20 +1,20 @@
 # 1st - Dependencies
 #
-FROM golang:alpine as dependencies
+FROM golang:alpine as downloadmods
 WORKDIR /go/app
 COPY go.mod go.sum ./
-RUN go mod download all
+RUN go mod download
 
 # 2nd - Build
 #
-FROM dependencies as builder
+FROM downloadmods as builder
 # Create the user and group files that will be used in the running
 # container to run the process as an unprivileged user.
 RUN mkdir /user && \
     echo 'nobody:x:65534:65534:nobody:/:' > /user/passwd && \
     echo 'nobody:x:65534:' > /user/group
 COPY . .
-COPY --from=dependencies /go/pkg/mod/cache .
+# COPY --from=downloadmods /go/pkg/mod/cache .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=5 go build \
     -ldflags='-w -s -extldflags "-static"' \
     -a -installsuffix cgo \
@@ -70,5 +70,6 @@ EXPOSE 3443
 # USER nobody:nobody
 
 # Run the service on container startup.
-ENTRYPOINT ["./app"]
-# CMD ["./app"]
+# ENTRYPOINT ["./app"]
+
+CMD ["./app"]
