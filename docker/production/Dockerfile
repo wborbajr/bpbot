@@ -68,7 +68,7 @@ COPY --from=builder go/app/.env .
 EXPOSE 3443
 
 # Perform any further action as an unprivileged user.
-# USER nobody:nobody
+USER nobody:nobody
 
 # Run the service on container startup.
 # ENTRYPOINT ["./app"]
