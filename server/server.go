@@ -10,10 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-type internalError struct {
-	Message string `json:"message"`
-}
-
 func SetupApp() {
 	app := fiber.New(fiber.Config{
 		Concurrency:  	256 * 1024,
@@ -22,26 +18,6 @@ func SetupApp() {
 		IdleTimeout:	10 * time.Second,
 		BodyLimit:		4 * 1024 * 1024,
 		CompressedFileSuffix: ".fiber.gz",
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			// Status code defaults to 500
-			code := fiber.StatusInternalServerError
-			var msg string
-			// Retrieve the custom status code if it's an fiber.*Error
-			if e, ok := err.(*fiber.Error); ok {
-				code = e.Code
-				msg = e.Message
-			}
-
-			if msg == "" {
-				msg = "cannot process the http call"
-			}
-
-			// Send custom error page
-			err = ctx.Status(code).JSON(internalError{
-				Message: msg,
-			})
-			return nil
-		},
 	})
 
 	app.Use(limiter.New(limiter.Config{
