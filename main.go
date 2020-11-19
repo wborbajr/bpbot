@@ -25,5 +25,5 @@ func main() {
 	bplogger.GeneralLogger.Println("Starting... "+ system_name + " " + system_version)
 
 	server.SetupApp()
-	
+
 }

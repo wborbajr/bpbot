@@ -2,17 +2,17 @@ version: "3.8"
 
 services:
 
-  noip:
-    image: ghcr.io/linuxserver/duckdns
-    container_name: duckdns
-    environment:
-      - PUID=1000 #optional
-      - PGID=1000 #optional
-      - TZ=America/Sao_Paulo
-      - SUBDOMAINS=${DUCK_SUBDOMAINS}
-      - TOKEN=${DUCK_TOKEN}
-      - LOG_FILE=false
-    restart: always
+  # noip:
+  #   image: ghcr.io/linuxserver/duckdns
+  #   container_name: duckdns
+  #   environment:
+  #     - PUID=1000 #optional
+  #     - PGID=1000 #optional
+  #     - TZ=America/Sao_Paulo
+  #     - SUBDOMAINS=${DUCK_SUBDOMAINS}
+  #     - TOKEN=${DUCK_TOKEN}
+  #     - LOG_FILE=false
+  #   restart: always
 
   bplusbot:
     stdin_open: true

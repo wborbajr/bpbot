@@ -17,7 +17,7 @@ type internalError struct {
 func SetupApp() {
 	app := fiber.New(fiber.Config{
 		Concurrency:  	256 * 1024,
-		WriteTimeout: 	10 * time.Second, 
+		WriteTimeout: 	10 * time.Second,
 		ReadTimeout: 	10 * time.Second,
 		IdleTimeout:	10 * time.Second,
 		BodyLimit:		4 * 1024 * 1024,
@@ -64,11 +64,11 @@ func SetupApp() {
 	log.Printf( "Server up and running: https://127.0.0.1:%s", sslport)
 	log.Fatal(app.Server().ListenAndServeTLS(":"+sslport, "./certs/server.crt", "./certs/server.key"))
 	// log.Fatal(app.Listen(":"+port))
-	
+
 }
 
 func botHealthCheck(c *fiber.Ctx) error {
-	return c.SendString("Pong")	
+	return c.SendString("Pong")
 }
 
 func setupRoutes(app *fiber.App) {
