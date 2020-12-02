@@ -17,9 +17,9 @@ services:
   bplusbot:
     stdin_open: true
     tty: true
-    container_name: ct_bpbot
-    hostname: bpbot
-    image: bpbot:latest
+    container_name: ${CONTAINER}
+    hostname: ${PROJECT_NAME}
+    image: ${DOCKER_USER}/${PROJECT_NAME}:${DOCKER_TAG}
     restart: always
     build:
       context: .
