@@ -1,153 +1,135 @@
 package main
 
 import (
-	"log"
-	"os"
-	"strconv"
-	"time"
+    "database/sql"
+    "fmt"
+    "log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/joho/godotenv"
+    _ "github.com/go-sql-driver/mysql"
+    "github.com/go-telegram-bot-api/telegram-bot-api"
+
 )
 
 const (
-	systemName 	= "Telegram BOT"
-	systemVersion = ".:: V0.0.1.1 ::."
+ host     = "127.1.0.1"
+ port  = "3306"
+    database  = "test"
+    user      = "root"
+    password  = "Cpd00mjh"
+
+    botKey      = "1492425752:AAFY7N1QUey4hSpeDQ0s6oJsZ-eJKWiY3Wo"
+
+
 )
 
-var (
-	superToken string
-	chatID		int64
-)
-
-func init() {
-
-	// https://api.telegram.org/bot851768239:AAGFupgI71uMHPbHPTsIvEUS3vpIyLDQXLg/deleteWebhook
-	// https://api.telegram.org/bot851768239:AAGFupgI71uMHPbHPTsIvEUS3vpIyLDQXLg/getUpdates
-
-	// 	2020/12/02 16:08:47 getUpdates resp: {"ok":true,"result":[{"update_id":151184257,
-	// "message":{"message_id":92,"from":{"id":782816475,"is_bot":false,"first_name":"Waldir Borba Junior","username":"wborbajr","language_code":"en"},"chat":{"id":782816475,"first_name":"Waldir Borba Junior","username":"wborbajr","type":"private"},"date":1606936126,"text":"/start","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}]}
-
-	err := godotenv.Load()
-
-	if err != nil {
-		panic("Error loading .env file: ")
-	}
-
-	superToken = os.Getenv("BOT_TOKEN")
-	chatID, _ = strconv.ParseInt(os.Getenv("BOT_CHATID"), 10, 64)
-
+type City struct {
+    Id              int
+    Name            string
+    Population      int
 }
 
-// TeleBot BPBot
-type TeleBot struct {
-	botAPI *tgbotapi.BotAPI
+//Edita do modo que for melhor
+type (c City) String() string {
+    return c.Name
+}
+
+func checkBD(err error) {
+    if err != nil {
+  fmt.Println("Erro de conexção com o banco de dados!")
+  fmt.Println(err)
+ } else {
+        fmt.Println("Sucesso em criar conexção com o banco de dados.")
+ }
+}
+
+func checkBot(err error) {
+ if err != nil {
+  fmt.Println("Erro de conexção com o BOT")
+  fmt.Println(err)
+ } else {
+  fmt.Println("Sucesso em carregar o BOT")
+ }
 }
 
 func main() {
 
-	bot, newBotErr := tgbotapi.NewBotAPI(superToken)
+    // Initialize connection string.
+    var connectionString = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?allowNativePasswords=true", user, password, host, port, database)
 
-	if newBotErr != nil {
-		log.Println("😤😤😤 Telegram BOT Not Found")
-		return
-	}
+    // Initialize connection object.
+    db, err := sql.Open("mysql", connectionString)
+    defer db.Close()
 
-	log.Printf("Authorized on account Username: %s - Appear name %s", bot.Self.UserName, bot.Self.FirstName)
+    err = db.Ping()
+ checkBD(err)
 
-	bot.Debug = true
+    if err != nil {
 
-	teleBot := TeleBot{
-		botAPI: bot,
-	}
+    } else {
+        var connectionBot = fmt.Sprintf("%s", botKey)
+        bot, err := tgbotapi.NewBotAPI(connectionBot)
 
-	go teleBot.updateNewMsg()
+        checkBot(err)
 
-	for {
-		// teleBot.telegramSendMsg("now time : " + time.Now().Format(time.RFC3339))
-		time.Sleep(time.Second * 30)
-	}
-}
+        bot.Debug = false
 
-func (t *TeleBot) telegramSendMsg(text string) {
+        fmt.Printf("Authorized on account %s", bot.Self.UserName)
 
-	msg := tgbotapi.NewMessage(chatID, text)
-	_, err := t.botAPI.Send(msg)
-	if err != nil {
-		log.Println("⚡︎⚡︎⚡︎ Failed to send Telegram message")
-		return
-	}
-}
+        u := tgbotapi.NewUpdate(0)
+        u.Timeout = 60
 
-func (t *TeleBot) replyKeyboardMarkup() {
+        updates, err := bot.GetUpdatesChan(u)
 
-	// msg := tgbotapi.NewMessage(chatID, "Please select the action you want to perform")
-	// msg.ReplyMarkup = tgbotapi.ReplyKeyboardMarkup{
-	// 	Keyboard: [][]tgbotapi.KeyboardButton{
-	// 		tgbotapi.NewKeyboardButtonRow(
-	// 			tgbotapi.NewKeyboardButton(showMeStatus),
-	// 			tgbotapi.NewKeyboardButton(adjustRTP),
-	// 		),
-	// 	},
-	// }
+        for update := range updates {
+            if update.Message == nil {
+                continue
+            }
 
-	// t.botAPI.Send(msg)
-}
+            log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-func (t *TeleBot) updateNewMsg() {
-	// bot, newBotErr := tgbotapi.NewBotAPI(superToken)
-	// if newBotErr != nil {
-	// 	log.Println("🐔🐔🐔 Telegram BOT 找不到")
-	// 	return
-	// }
+            if update.Message.IsCommand() {
+                msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+                switch update.Message.Command() {
+                case "help":
+                    msg.Text = "type /sayhi or /status."
+                case "sayhi":
+                    msg.Text = "Hi :)"
+                case "status":
+                    msg.Text = "I'm ok."
+                case "withArgument":
+                    msg.Text = "You supplied the following argument: " + update.Message.CommandArguments()
+                case "html":
+                    msg.ParseMode = "html"
+                    msg.Text = "This will be interpreted as HTML, click <a href=\"https://www.example.com\">here</a>"
+                case "cidades":
+                    res, err := db.Query("SELECT * FROM cities")
+                    defer res.Close()
+                    if err != nil {
+                        fmt.Println("Erro ao selecionar (CITIES) no banco")
+                        log.Fatal(err)
+                    } else {
+                        msg.Text = "Lista de cidades"
+                        for res.Next() {
 
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 10
-	updates, err := t.botAPI.GetUpdatesChan(u)
+                            var city City
+                            err := res.Scan(&city.Id, &city.Name, &city.Population)
 
-	if err != nil {
-		log.Println("😰😰😰 Telegram - Update message failed")
-		return
-	}
-	for update := range updates {
+                            if err != nil {
+                                fmt.Println("Erro ao carregar a lista de cidades em (CITIES) do banco")
+                                log.Fatal(err)
+                            } else {
 
-		if update.CallbackQuery != nil {
-			cbd := update.CallbackQuery.Data
+                                msg.Text = city.String()
+                                fmt.Printf("%v\n", city)
 
-			switch cbd {
-			case "/start":
-				log.Println("data :", update.CallbackQuery.Data)
-				t.telegramSendMsg("input username plz.")
-			}
-		}
-
-		if update.Message != nil {
-
-			cmd := update.Message.Command()
-
-			switch cmd {
-				case "login":
-					t.showLoginKeyboard()
-
-			}
-
-			log.Printf("[super - %s] %s", update.Message.From.UserName, update.Message.Text)
-		}
-
-	}
-}
-
-func (t *TeleBot) showLoginKeyboard() {
-
-	println("showLoginKeyboard")
-
-	bt := tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Inser Username", "inserUsername"),
-		),
-	)
-
-	msg := tgbotapi.NewMessage(chatID, "Please select action")
-	msg.ReplyMarkup = bt
-	t.botAPI.Send(msg)
+                            }
+                        }
+                    }
+                default:
+                    msg.Text = "Comando não encontado"
+                }
+                bot.Send(msg)
+            }
+        }
+    }
 }

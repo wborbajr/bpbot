@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -17,7 +18,7 @@ import (
 var Error *log.Logger
 
 const (
-	pathToFiles = "../ustad/files/"
+	pathToFiles = "./files/"
 )
 
 func init() {
@@ -27,7 +28,7 @@ func init() {
 
 const (
 	applicationName = "EletronMasterBot::"
-	welcomeMessage  = "Welcome to Ustad.\n" +
+	welcomeMessage  = "Welcome to BPBot.\n" +
 		"It can extract audio from almost every Youtube video.\n" +
 		"Send a link in input field."
 	instructionsMessage = "For sending feedback use command /feedback" +
@@ -60,6 +61,7 @@ func main() {
 	}
 
 	fmt.Fprintln(os.Stdout, "Authorized on account", bot.Self.UserName)
+	fmt.Println("- - - - - - - - - - - - - - - - - - - -")
 
 	// channellogger.SendLogInfoToChannel(
 	// 	channel, applicationName+"started")
@@ -293,6 +295,15 @@ func gettingMessageFromBot(
 
 	chatID := update.Message.Chat.ID
 	command := update.Message.Command()
+
+	var contact tgbotapi.Message
+	err := json.Unmarshal([]byte(update.Message.Contact.FirstName), &contact)
+   if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Fprintln(os.Stdout, "ChatID ", chatID)
+	fmt.Fprintln(os.Stdout, "From: ", contact)
 
 	switch command {
 	case "start":
